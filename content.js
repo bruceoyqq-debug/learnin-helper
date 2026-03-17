@@ -10,8 +10,8 @@
 
   // ---- 配置 ----
   const CFG = {
-    speed: 2.0,
-    autoNext: true,
+    speed: 3.0,
+    autoNext: false,
     autoPlay: true,
     skipWait: true,
     running: false,
@@ -258,8 +258,8 @@
           <div class="speed-btns" id="speed-btns">
             <button class="speed-btn" data-speed="1">1×</button>
             <button class="speed-btn" data-speed="1.5">1.5×</button>
-            <button class="speed-btn active" data-speed="2">2×</button>
-            <button class="speed-btn" data-speed="3">3×</button>
+            <button class="speed-btn" data-speed="2">2×</button>
+            <button class="speed-btn active" data-speed="3">3×</button>
           </div>
         </div>
 
@@ -276,7 +276,7 @@
         <div class="toggle-row">
           <span class="toggle-label">自动切换下一节</span>
           <label class="toggle-switch">
-            <input type="checkbox" id="tog-autonext" checked>
+            <input type="checkbox" id="tog-autonext">
             <span class="toggle-track"></span>
           </label>
         </div>
