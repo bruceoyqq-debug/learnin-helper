@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>正在学刷课助手</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 280px;
+      background: #0d0d0d;
+      color: #e8e8e8;
+      font-family: 'SF Pro Display', -apple-system, 'PingFang SC', sans-serif;
+      padding: 20px 18px 18px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .title-wrap h1 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+
+    .title-wrap p {
+      font-size: 10.5px;
+      color: #555;
+      margin-top: 1px;
+    }
+
+    .section {
+      background: #141414;
+      border: 1px solid #1e1e1e;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: 10px;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #666;
+      padding: 4px 0;
+    }
+
+    .info-val {
+      color: #aaa;
+      font-weight: 500;
+    }
+
+    .info-val.green { color: #22c55e; }
+
+    .tip {
+      font-size: 11px;
+      color: #444;
+      line-height: 1.7;
+      padding: 10px 12px;
+      background: #111;
+      border-radius: 8px;
+      border-left: 2px solid #22c55e44;
+    }
+
+    .tip strong { color: #666; }
+
+    .open-btn {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+      font-family: inherit;
+      letter-spacing: 0.02em;
+      transition: all 0.2s;
+    }
+
+    .open-btn:hover {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      box-shadow: 0 4px 16px rgba(34,197,94,0.25);
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 10px;
+      color: #2a2a2a;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">⚡</div>
+    <div class="title-wrap">
+      <h1>正在学刷课助手</h1>
+      <p>learnin.com.cn · v1.0.0</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">功能特性</div>
+    <div class="info-row">
+      <span>自动播放视频</span>
+      <span class="info-val green">✓</span>
+    </div>
+    <div class="info-row">
+      <span>倍速播放（最高3×）</span>
+      <span class="info-val green">✓</span>
+    </div>
+    <div class="info-row">
+      <span>自动切换下一节</span>
+      <span class="info-val green">✓</span>
+    </div>
+    <div class="info-row">
+      <span>自动关闭弹窗</span>
+      <span class="info-val green">✓</span>
+    </div>
+    <div class="info-row">
+      <span>悬浮控制面板</span>
+      <span class="info-val green">✓</span>
+    </div>
+  </div>
+
+  <div class="tip">
+    <strong>使用方法：</strong><br>
+    打开课程视频页面，页面右下角会出现悬浮控制面板，点击「开始刷课」即可。
+  </div>
+
+  <button class="open-btn" id="open-btn">打开正在学平台</button>
+
+  <div class="footer">仅供学习使用 · 请遵守平台规则</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

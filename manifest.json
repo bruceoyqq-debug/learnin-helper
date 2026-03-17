@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "正在学 · 刷课助手",
+  "version": "1.0.0",
+  "description": "learnin.com.cn 自动刷课：视频自动播放、倍速、自动切换下一节",
+  "permissions": [
+    "storage",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://www.learnin.com.cn/*",
+    "https://learnin.com.cn/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.learnin.com.cn/user/*",
+        "https://learnin.com.cn/user/*"
+      ],
+      "js": ["content.js"],
+      "css": ["panel.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
