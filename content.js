@@ -79,28 +79,56 @@
   }
 
   // ---- 自动播放 ----
+  let _playAttempts = 0;
   function tryPlay(video) {
-    if (!video || !video.paused) return;
+    if (!video) return;
+    // 已在播放则重置计数
+    if (!video.paused) { _playAttempts = 0; return; }
+    // 超过 30 次放弃（约 30 秒）
+    if (_playAttempts > 30) return;
+    _playAttempts++;
+
+    const doPlay = (v) => {
+      // 先静音，绕过浏览器自动播放策略
+      v.muted = true;
+      const p = v.play();
+      if (p && typeof p.then === 'function') {
+        p.then(() => {
+          // 播放成功后延迟恢复音量
+          setTimeout(() => { v.muted = false; }, 500);
+          _playAttempts = 0;
+          log('自动播放成功', 'ok');
+        }).catch(() => {
+          // 失败了，下次循环再试
+          v.muted = false;
+        });
+      }
+    };
+
     try {
-      // 方式1：video.js API
+      // 优先 video.js API
       const player = getVjsPlayer(video);
       if (player && typeof player.play === 'function') {
+        video.muted = true;
         const p = player.play();
-        if (p && typeof p.catch === 'function') p.catch(() => {});
+        if (p && typeof p.then === 'function') {
+          p.then(() => {
+            setTimeout(() => { video.muted = false; }, 500);
+            _playAttempts = 0;
+            log('自动播放成功 (vjs)', 'ok');
+          }).catch(() => {
+            video.muted = false;
+            doPlay(video); // 降级到原生
+          });
+        } else {
+          setTimeout(() => { video.muted = false; }, 500);
+        }
         return;
       }
     } catch (e) {}
-    // 方式2：先静音再播放（绕过浏览器自动播放限制）
-    try {
-      video.muted = true;
-      video.play().then(() => {
-        // 播放成功后恢复音量
-        setTimeout(() => { video.muted = false; }, 300);
-      }).catch(() => {
-        // 静音也失败，说明还没有用户交互，等下次循环重试
-        video.muted = false;
-      });
-    } catch (e) {}
+
+    // 原生播放
+    doPlay(video);
   }
 
   // ---- 跳过等待弹窗（如"请认真观看"提示） ----
@@ -565,6 +593,16 @@
 
     buildPanel();
     log('正在学刷课助手已就绪', 'ok');
+
+    // 新标签页打开时，如果 autoPlay 开启则自动启动刷课
+    // 判断依据：URL 含 /learn/ 说明是具体视频页，非列表页
+    if (CFG.autoPlay && location.hash.includes('/learn/')) {
+      CFG.running = true;
+      updateRunBtn();
+      log('检测到视频页，自动启动...', 'ok');
+      // 稍等页面渲染完成
+      setTimeout(mainLoop, 2000);
+    }
   }
 
   // SPA 路由变化监听（Vue Router hash 模式）
