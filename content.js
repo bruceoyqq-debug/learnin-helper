@@ -47,21 +47,60 @@
     return null;
   }
 
+  // ---- 获取 video.js 实例 ----
+  function getVjsPlayer(video) {
+    if (!video) return null;
+    try {
+      // video.js 会把实例挂在 video 元素上
+      if (video.player) return video.player;
+      // 或者通过全局 videojs
+      if (window.videojs && video.id) return window.videojs.getPlayer(video.id);
+      // 通过父容器找
+      const vjsEl = video.closest('.video-js');
+      if (vjsEl && vjsEl.id && window.videojs) return window.videojs.getPlayer(vjsEl.id);
+    } catch (e) {}
+    return null;
+  }
+
   // ---- 设置倍速 ----
   function setSpeed(video, speed) {
     if (!video) return;
     try {
+      // 优先用 video.js API
+      const player = getVjsPlayer(video);
+      if (player && typeof player.playbackRate === 'function') {
+        player.playbackRate(speed);
+      }
+      // 同时直接设置（双保险）
       video.playbackRate = speed;
-      // 有些平台会重置，持续监听
-    } catch (e) {}
+    } catch (e) {
+      try { video.playbackRate = speed; } catch (_) {}
+    }
   }
 
   // ---- 自动播放 ----
   function tryPlay(video) {
-    if (!video) return;
-    if (video.paused) {
-      video.play().catch(() => {});
-    }
+    if (!video || !video.paused) return;
+    try {
+      // 方式1：video.js API
+      const player = getVjsPlayer(video);
+      if (player && typeof player.play === 'function') {
+        const p = player.play();
+        if (p && typeof p.catch === 'function') p.catch(() => {});
+        return;
+      }
+    } catch (e) {}
+    // 方式2：先静音再播放（绕过浏览器自动播放限制）
+    try {
+      video.muted = true;
+      video.play().then(() => {
+        // 播放成功后恢复音量
+        setTimeout(() => { video.muted = false; }, 300);
+      }).catch(() => {
+        // 静音也失败，说明还没有用户交互，等下次循环重试
+        video.muted = false;
+      });
+    } catch (e) {}
   }
 
   // ---- 跳过等待弹窗（如"请认真观看"提示） ----
@@ -164,6 +203,17 @@
       video.addEventListener('play', () => {
         setSpeed(video, CFG.speed);
       });
+      // video.js 加载完成事件
+      const player = getVjsPlayer(video);
+      if (player) {
+        player.on('ready', () => setSpeed(video, CFG.speed));
+        player.on('play', () => setSpeed(video, CFG.speed));
+        player.on('ratechange', () => {
+          if (CFG.running && video.playbackRate !== CFG.speed) {
+            setSpeed(video, CFG.speed);
+          }
+        });
+      }
       log('检测到视频，已绑定监听', 'ok');
     }
 
