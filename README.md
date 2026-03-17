@@ -1,6 +1,8 @@
 # 正在学刷课助手 ⚡
 
 > Chrome 浏览器插件，适用于 [learnin.com.cn（正在学）](https://www.learnin.com.cn) 平台
+> 
+> 当前版本：**v1.1.0** · [查看更新日志](./CHANGELOG.md)
 
 ## ✨ 功能
 
