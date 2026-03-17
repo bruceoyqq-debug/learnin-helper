@@ -268,6 +268,42 @@
   box-shadow: 0 4px 16px rgba(239,68,68,0.3);
 }
 
+/* 多开按钮 */
+#btn-multi {
+  width: 100%;
+  margin-top: 8px;
+  padding: 9px;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  color: #888;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+}
+
+#btn-multi:hover:not(:disabled) {
+  background: #1a2a1a;
+  border-color: #22c55e55;
+  color: #22c55e;
+}
+
+#btn-multi:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.multi-tip {
+  font-size: 10px;
+  color: #333;
+  line-height: 1.6;
+  margin-top: 6px;
+  padding: 0 2px;
+}
+
 /* Progress bar */
 #video-progress-wrap {
   background: #1a1a1a;

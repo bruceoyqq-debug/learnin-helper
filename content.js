@@ -1,5 +1,5 @@
 // ===== 正在学刷课助手 · content.js =====
-// 支持：learnin.com.cn 视频课程自动播放、倍速、自动切换下一节
+// 支持：learnin.com.cn 视频课程自动播放、倍速、自动切换下一节、一键多开
 
 (function () {
   'use strict';
@@ -176,7 +176,74 @@
     return null;
   }
 
-  // ---- 主循环 ----
+  // ---- 多开：收集课程列表所有视频链接并批量新标签打开 ----
+  function collectVideoLinks() {
+    // 容器：.video-items，每项：a.student-course-video-item
+    const links = $$('a.student-course-video-item');
+    if (links.length === 0) return [];
+    return links.map(a => {
+      const href = a.getAttribute('href') || '';
+      // href 是 #/user/... 相对路径，拼成完整 URL
+      const fullUrl = href.startsWith('http')
+        ? href
+        : `${location.origin}/user/${href.startsWith('#') ? '' : '#'}${href.replace(/^#?\//, '#/')}`;
+      const title = a.textContent.trim().slice(0, 30) || href;
+      return { url: fullUrl, title };
+    });
+  }
+
+  // 批量打开所有视频（每隔 600ms 开一个，避免浏览器拦截）
+  async function openAllTabs() {
+    const links = collectVideoLinks();
+    if (links.length === 0) {
+      log('未找到课程列表，请在课程列表页使用', 'warn');
+      return;
+    }
+    log(`发现 ${links.length} 个视频，开始多开...`, 'ok');
+    updateMultiBtn(true, links.length);
+
+    for (let i = 0; i < links.length; i++) {
+      window.open(links[i].url, '_blank');
+      log(`已打开 [${i + 1}/${links.length}] ${links[i].title}`, 'ok');
+      await sleep(600);
+    }
+    log(`全部 ${links.length} 个标签已打开 🎉`, 'ok');
+    updateMultiBtn(false, links.length);
+  }
+
+  function updateMultiBtn(loading, count) {
+    const btn = $('#btn-multi');
+    if (!btn) return;
+    if (loading) {
+      btn.textContent = `⏳ 打开中...`;
+      btn.disabled = true;
+    } else {
+      btn.textContent = `🗂 一键多开 (${count})`;
+      btn.disabled = false;
+    }
+  }
+
+  // 检测当前是否在课程列表页（有 .video-items）
+  function isListPage() {
+    return $$('a.student-course-video-item').length > 0;
+  }
+
+  // 动态更新多开按钮状态
+  function refreshMultiBtn() {
+    const btn = $('#btn-multi');
+    const wrap = $('#multi-wrap');
+    if (!btn || !wrap) return;
+    const links = collectVideoLinks();
+    if (links.length > 0) {
+      wrap.style.display = 'block';
+      btn.textContent = `🗂 一键多开 (${links.length})`;
+      btn.disabled = false;
+    } else {
+      wrap.style.display = 'none';
+    }
+  }
+
+
   let loopTimer = null;
   let videoWatcher = null;
   let lastVideoSrc = '';
@@ -343,6 +410,12 @@
 
         <button id="btn-start">▶ 开始刷课</button>
 
+        <div id="multi-wrap" style="display:none">
+          <div class="divider" style="margin-top:8px"></div>
+          <button id="btn-multi">🗂 一键多开</button>
+          <div class="multi-tip">在课程列表页点击，将所有视频分别在新标签页打开并自动播放</div>
+        </div>
+
         <div id="panel-log"></div>
       </div>
     `;
@@ -405,6 +478,15 @@
         updateStatus('已暂停', null);
       }
     });
+
+    // 一键多开
+    $('#btn-multi', panel).addEventListener('click', (e) => {
+      e.stopPropagation();
+      openAllTabs();
+    });
+
+    // 初始检测是否在列表页
+    setTimeout(refreshMultiBtn, 1000);
   }
 
   function updateRunBtn() {
@@ -494,6 +576,8 @@
       setTimeout(() => {
         if (!document.getElementById('learnin-panel')) {
           init();
+        } else {
+          refreshMultiBtn();
         }
       }, 1500);
     }
