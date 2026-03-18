@@ -10,7 +10,7 @@
 
   // ---- 配置 ----
   const CFG = {
-    speed: 3.0,
+    speed: 2.0,
     autoNext: false,
     autoPlay: true,
     skipWait: true,
@@ -82,6 +82,8 @@
   let _playAttempts = 0;
   function tryPlay(video) {
     if (!video) return;
+    // 视频已结束，不重复播放
+    if (video.ended) return;
     // 已在播放则重置计数
     if (!video.paused) { _playAttempts = 0; return; }
     // 超过 30 次放弃（约 30 秒）
@@ -403,8 +405,8 @@
           <div class="speed-btns" id="speed-btns">
             <button class="speed-btn" data-speed="1">1×</button>
             <button class="speed-btn" data-speed="1.5">1.5×</button>
-            <button class="speed-btn" data-speed="2">2×</button>
-            <button class="speed-btn active" data-speed="3">3×</button>
+            <button class="speed-btn active" data-speed="2">2×</button>
+            <button class="speed-btn" data-speed="3">3×</button>
           </div>
         </div>
 
